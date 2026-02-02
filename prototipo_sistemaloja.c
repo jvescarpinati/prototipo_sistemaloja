@@ -147,7 +147,7 @@ int main()
                 }
 
                 if(opcao_cliente==3){
-                    void atualizar_infos_cliente(Cliente *inicio_cli, Cliente *fim_cli, Funcionarios *inicio_fun, Funcionarios *fim_fun);
+                    atualizar_infos_cliente(inicio_cliente, fim_cliente, inicio_funcionario, fim_funcionario);
                 }
 
                 if(opcao_cliente==4){
@@ -200,14 +200,10 @@ int cancelar_operacao(){
 
 int busca_cpf_geral(Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *inicio_cli, Cliente *fim_cli, char *cpf_procurado) {
     for (Funcionarios *pf = inicio_fun; pf < fim_fun; pf++) {
-        if (strcmp(pf->cpf_funcionario, cpf_procurado) == 0) {
-            return 1;
-        }
+        if (strcmp(pf->cpf_funcionario, cpf_procurado) == 0) return 1;
     }
-    for (Cliente *c = inicio_cli; c < fim_cli; c++) {
-        if (strcmp(c->cpf_cliente, cpf_procurado) == 0) {
-            return 1;
-        }
+    for (Cliente *pc = inicio_cli; pc < fim_cli; pc++) {
+        if (strcmp(pc->cpf_cliente, cpf_procurado) == 0) return 1;
     }
     return 0;
 }
@@ -482,18 +478,22 @@ void atualizar_infos_funcionarios(Funcionarios *inicio_fun, Funcionarios *fim_fu
     if (flag == 0)
     {
         int verifcpffun = 0;
+        char novo_cpf[12];
         do {
             printf("\nDigite o novo cpf do funcionario (11 digitos): ");
-            scanf(" %[^\n]", funcionario_achado->cpf_funcionario);
+            scanf(" %[^\n]", novo_cpf);
             while (getchar() != '\n');
+            if (strcmp(novo_cpf, funcionario_achado->cpf_funcionario) != 0 && 
+                busca_cpf_geral(inicio_fun, fim_fun, inicio_cli, fim_cli, novo_cpf)) {
+                printf("\nErro: Este CPF ja esta cadastrado no sistema!\n");
+                verifcpffun = 1;
+            } else {
+                char backup_local[12];
+                strcpy(backup_local, funcionario_achado->cpf_funcionario);
+                
+                strcpy(funcionario_achado->cpf_funcionario, novo_cpf);
+                verifcpffun = verificar_cpf_fun(funcionario_achado);
 
-            verifcpffun = verificar_cpf_fun(funcionario_achado);
-
-            if (verifcpffun == 0) {
-                if (busca_cpf_geral(inicio_fun, fim_fun, inicio_cli, fim_cli, funcionario_achado->cpf_funcionario)) {
-                    printf("\nErro: Este CPF ja esta cadastrado no sistema (como cliente ou funcionario)!\n");
-                    verifcpffun = 1;
-                }
             }
         } while (verifcpffun == 1);
 
@@ -764,20 +764,22 @@ void atualizar_infos_cliente(Cliente *inicio_cli, Cliente *fim_cli, Funcionarios
     if (flag == 0)
     {
         int verif_cpf_cli = 0;
+        char novo_cpf_cli[12];
         do {
             printf("\nDigite o novo cpf do cliente (11 digitos): ");
-            scanf(" %[^\n]", cliente_achado->cpf_cliente);
-            while (getchar() != '\n'); // Limpa buffer
+            scanf(" %[^\n]", novo_cpf_cli);
+            while (getchar() != '\n');
 
-            // 1. Verifica o formato usando sua função de cliente
-            verif_cpf_cli = verificar_cpf_cliente(cliente_achado);
-
-            if (verif_cpf_cli == 0) {
-                // 2. Verifica se o CPF já existe no sistema todo (Valor Único)
-                if (busca_cpf_geral(inicio_fun, fim_fun, inicio_cli, fim_cli, cliente_achado->cpf_cliente)) {
-                    printf("\nErro: Este CPF ja esta cadastrado no sistema (como cliente ou funcionario)!\n");
-                    verif_cpf_cli = 1;
-                }
+            if (strcmp(novo_cpf_cli, cliente_achado->cpf_cliente) != 0 && 
+                busca_cpf_geral(inicio_fun, fim_fun, inicio_cli, fim_cli, novo_cpf_cli)) {
+                printf("\nErro: Este CPF ja esta cadastrado no sistema!\n");
+                verif_cpf_cli = 1;
+            } else {
+                char backup_cli[12];
+                strcpy(backup_cli, cliente_achado->cpf_cliente);
+                
+                strcpy(cliente_achado->cpf_cliente, novo_cpf_cli);
+                verif_cpf_cli = verificar_cpf_cliente(cliente_achado);
             }
         } while (verif_cpf_cli == 1);
 
@@ -808,7 +810,7 @@ void atualizar_infos_cliente(Cliente *inicio_cli, Cliente *fim_cli, Funcionarios
     }
 
     do {
-        printf("Escreva o genero (M/F): ");
+        printf("\nEscreva o genero (M/F): ");
         scanf(" %1s", cliente_achado->genero_cliente);
         while (getchar() != '\n');
         
@@ -817,11 +819,11 @@ void atualizar_infos_cliente(Cliente *inicio_cli, Cliente *fim_cli, Funcionarios
         }
         
         if (cliente_achado->genero_cliente[0] != 'M' && cliente_achado->genero_cliente[0] != 'F') {
-            printf("Erro: Opcao invalida. Digite M ou F.\n");
+            printf("\nErro: Opcao invalida. Digite M ou F.\n");
         }
     } while (cliente_achado->genero_cliente[0] != 'M' && cliente_achado->genero_cliente[0] != 'F');
 
-    printf("Escreva o telefone do cliente (somente numeros): ");
+    printf("\nEscreva o telefone do cliente (somente numeros): ");
     scanf("%11lld", &cliente_achado->telefone_cliente);
     while (getchar() != '\n');
 
