@@ -2,6 +2,18 @@
 #include <string.h>
 #include <ctype.h>
 
+/*   printf("\n");
+    int opcao_cancelar;
+    do{
+        opcao_cancelar=cancelar_operacao();
+        if (opcao_cancelar!=1 && opcao_cancelar!=2) {
+            printf("Opcao invalida! Tente novamente.\n\n");
+        }
+    }while(opcao_cancelar!=1 && opcao_cancelar!=2);
+    
+    if(opcao_cancelar==2) return 0;
+    else{*/
+
 typedef struct
 {
     char cpf_funcionario[12];
@@ -28,23 +40,9 @@ typedef struct
 
 } Venda;
 
-int menu_geral()
-{
-    int opcao;
-    printf("\n====Escolha qual area voce quer acessar====\n");
-    printf("1-Area Funcionarios\n");
-    printf("2-Area Clientes\n");
-    printf("3-Vendas\n");
-    printf("4-Listar Dados de Todos os Funcionarios\n");
-    printf("5-Listar Dados de Todos os Clientes\n");
-    printf("6-Listar Dados de vendas\n");
-    printf("7-Criar Relatorio TXT\n");
-    printf("8-Sair do App\n");
-    printf("Qual a opcao escolhida? ");
-    scanf("%d", &opcao);
-    printf("\n");
-    return opcao;
-}
+int menu_geral();
+
+int cancelar_operacao();
 
 /*Comeco funcionario==================================================================================================================================================*/
 
@@ -56,7 +54,7 @@ int verificar_cpf_fun(Funcionarios *funci);
 
 int verificar_cargo_fun(Funcionarios *func);
 
-void cadastro_funcio(Funcionarios *fim);
+int cadastro_funcio(Funcionarios *fim);
 
 void apagar_funcionario(Funcionarios *inicio, Funcionarios **fim);
 
@@ -72,7 +70,7 @@ Começo clientes================================================================
 
 int menu_clientes();
 
-void cadastro_cliente(Cliente *fim_cliente);
+int cadastro_cliente(Cliente *fim_cliente);
 
 int verificar_cpf_cliente(Cliente *cliente);
 
@@ -116,9 +114,10 @@ int main()
                 {
                     if (fim_funcionario < (inicio_funcionario + 5))
                     {
-                        cadastro_funcio(fim_funcionario);
-                        printf("\n");
-                        fim_funcionario++;
+                        if(cadastro_funcio(fim_funcionario)==1){
+                            printf("\n");
+                            fim_funcionario++;
+                        }
                     }
                 }
                 else if (opcao_funcionario == 2)
@@ -133,7 +132,7 @@ int main()
                 {
                     apagar_funcionario(inicio_funcionario, &fim_funcionario);
                 }
-            } while (opcao_funcionario != 5);
+            } while (opcao_funcionario != 5 && opcao_funcionario != 0);
 
             break;
         }
@@ -147,9 +146,10 @@ int main()
                 if (opcao_cliente == 1)
                 {
                     if(fim_cliente<(inicio_cliente+5)){
-                        cadastro_cliente(fim_cliente);
+                        if(cadastro_cliente(fim_cliente)==1){
                         printf("\n");
                         fim_cliente++;
+                        }
                     }
                 }
 
@@ -180,11 +180,38 @@ printf("\n\nSaindo do Programa...\n\n");
 return 0;
 }
 
+int menu_geral()
+{
+    int opcao;
+    printf("\n====Escolha qual area voce quer acessar====\n");
+    printf("1-Area Funcionarios\n");
+    printf("2-Area Clientes\n");
+    printf("3-Vendas\n");
+    printf("4-Listar Dados de Todos os Funcionarios\n");
+    printf("5-Listar Dados de Todos os Clientes\n");
+    printf("6-Listar Dados de vendas\n");
+    printf("7-Criar Relatorio TXT\n");
+    printf("8-Sair do App\n");
+    printf("Qual a opcao escolhida? ");
+    scanf("%d", &opcao);
+    return opcao;
+}
+
+int cancelar_operacao(){
+    printf("\nVoce deseja cancelar essa operacao?\n");
+    printf("1-Nao, prosseguir\n");
+    printf("2-Sim, retornar\n");
+
+    int opcao_cancelar;
+    printf("Qual a opcao escolhida: ");
+    scanf("%d", &opcao_cancelar);
+    
+    return opcao_cancelar;
+}
 // Comeco funcionario==================================================================================================================================================*/
 
-int menu_funcionarios()
-{
-    printf("Escolha uma opcao de alteracao para os funcionarios: \n");
+int menu_funcionarios(){
+    printf("\nEscolha uma opcao de alteracao para os funcionarios: \n");
     printf("1-Cadastro Novo Funcionario\n");
     printf("2-Visualziar Informacoes de cadastro de funcionario\n");
     printf("3-Atualizar Cadastro do Funcionario\n");
@@ -194,6 +221,7 @@ int menu_funcionarios()
     printf("Escolha uma opcao: ");
     scanf(" %d", &opcao);
     return opcao;
+    
 }
 
 int verificar_nome_fun(Funcionarios *funci)
@@ -248,7 +276,12 @@ int verificar_cargo_fun(Funcionarios *func)
     return flag;
 }
 
-void cadastro_funcio(Funcionarios *fim){
+int cadastro_funcio(Funcionarios *fim){
+    if(cancelar_operacao() == 2) {
+        printf("Operacao de cadastro abortada.\n");
+        return 0;
+    }
+
     int verifnomefun;
     do
     {
@@ -351,10 +384,21 @@ void cadastro_funcio(Funcionarios *fim){
             verifsalario = 1;
         }
     } while (verifsalario == 1);
+
+    return 1;
 }
 
 void apagar_funcionario(Funcionarios *inicio, Funcionarios **fim)
 {
+    if (inicio == fim) {
+        printf("Nenhum funcionario cadastrado para apagar.\n");
+        return; 
+    }
+    if (cancelar_operacao() == 2) {
+        printf("Retornando ao menu anterior...\n");
+        return;
+    }
+
     char cpf[12];
     int flag_busca;
     printf("Digite o cpf do funcionario que deseja remover: ");
@@ -397,7 +441,16 @@ Funcionarios *busca_funcionario(Funcionarios *inicio, Funcionarios *fim, char cp
 }
 
 void ler_info_func(Funcionarios *inicio, Funcionarios *fim)
-{
+{   
+    if (inicio == fim) {
+        printf("Nenhum funcionario cadastrado para visualizar.\n");
+        return; 
+    }
+    if (cancelar_operacao() == 2) {
+        printf("Retornando ao menu anterior...\n");
+        return;
+    }
+
     char cpf_achar[12];
     int flag = 0;
     int *Flag = &flag;
@@ -418,7 +471,16 @@ void ler_info_func(Funcionarios *inicio, Funcionarios *fim)
 }
 
 void atualizar_infos_funcionarios(Funcionarios *inicio, Funcionarios *fim)
-{
+{   
+    if (inicio == fim) {
+        printf("Nenhum funcionario cadastrado para atualizar.\n");
+        return; 
+    }
+    if (cancelar_operacao() == 2) {
+        printf("Retornando ao menu anterior...\n");
+        return;
+    }
+
     char cpf_achar[12];
     int flag = 0;
     int *Flag = &flag;
@@ -516,7 +578,7 @@ void atualizar_infos_funcionarios(Funcionarios *inicio, Funcionarios *fim)
 // Começo cliente======================================================================================================================================
 
 int menu_clientes()
-{
+{   
     printf("Escolha uma opcao:\n");
     printf("1-Cadastro Novo Cliente\n");
     printf("2-Visualziar Informacoes de Cadastro de Cliente\n");
@@ -527,6 +589,7 @@ int menu_clientes()
     printf("Escolha uma opcao: ");
     scanf(" %d", &opcao);
     return opcao;
+
 }
 
 int verificar_cpf_cliente(Cliente *cliente){
@@ -546,7 +609,13 @@ int verificar_cpf_cliente(Cliente *cliente){
     return 0;
 }
 
-void cadastro_cliente(Cliente *fim_cliente) {
+int cadastro_cliente(Cliente *fim_cliente) {
+    
+   if(cancelar_operacao() == 2) {
+        printf("Operacao de cadastro abortada.\n");
+        return 0;
+    }
+
     printf("\nEscreva o nome do Cliente: ");
     scanf(" %59[^\n]", fim_cliente->nome_cliente);
     while (getchar() != '\n');
@@ -583,9 +652,21 @@ void cadastro_cliente(Cliente *fim_cliente) {
     } while (fim_cliente->genero_cliente[0] != 'M' && fim_cliente->genero_cliente[0] != 'F');
 
     printf("\nSucesso: Cliente cadastrado!\n");
+    
+    return 1;
 }
 
 void leitura_cliente(Cliente *inicio, Cliente *fim){
+
+    if (inicio == fim) {
+        printf("Nenhum cliente cadastrado para visualizar.\n");
+        return; 
+    }
+    if (cancelar_operacao() == 2) {
+        printf("Retornando ao menu anterior...\n");
+        return;
+    }
+
     char cpf_alvo[12];
     int flag = 0;
     int *Flag = &flag;
@@ -620,6 +701,16 @@ Cliente *busca_cliente(Cliente *inicio, Cliente *fim, char cpf_alvo[12], int *Fl
 }
 
 void apagar_cliente(Cliente *inicio, Cliente **fim){
+
+    if (inicio == fim) {
+        printf("Nenhum cliente cadastrado para apagar.\n");
+        return; 
+    }
+    if (cancelar_operacao() == 2) {
+        printf("Retornando ao menu anterior...\n");
+        return;
+    }
+
     char cpf[12];
     int flag_busca;
     printf("Digite o cpf do cliente que deseja remover: ");
@@ -645,6 +736,16 @@ void apagar_cliente(Cliente *inicio, Cliente **fim){
 
 void atualizar_infos_cliente(Cliente *inicio, Cliente *fim)
 {
+
+    if (inicio == fim) {
+        printf("Nenhum cliente cadastrado para atualizar.\n");
+        return; 
+    }
+    if (cancelar_operacao() == 2) {
+        printf("Retornando ao menu anterior...\n");
+        return;
+    }
+
     char cpf_achar[12];
     int flag = 0;
     int *Flag = &flag;
