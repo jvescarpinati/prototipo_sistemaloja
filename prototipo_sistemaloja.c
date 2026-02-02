@@ -32,6 +32,8 @@ int menu_geral();
 
 int cancelar_operacao();
 
+int busca_cpf_geral(Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *inicio_cli, Cliente *fim_cli, char *cpf_procurado);
+
 /*Comeco funcionario==================================================================================================================================================*/
 
 int menu_funcionarios();
@@ -42,7 +44,7 @@ int verificar_cpf_fun(Funcionarios *funci);
 
 int verificar_cargo_fun(Funcionarios *func);
 
-int cadastro_funcio(Funcionarios *fim);
+int cadastro_funcio(Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *inicio_cli, Cliente *fim_cli);
 
 void apagar_funcionario(Funcionarios *inicio, Funcionarios **fim);
 
@@ -50,15 +52,14 @@ Funcionarios *busca_funcionario(Funcionarios *inicio, Funcionarios *fim, char cp
 
 void ler_info_func(Funcionarios *inicio, Funcionarios *fim);
 
-void atualizar_infos_funcionarios(Funcionarios *inicio, Funcionarios *fim);
-
+void atualizar_infos_funcionarios(Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *inicio_cli, Cliente *fim_cli);
 /*Fim funcionario=====================================================================================================================================
 
 Começo clientes=====================================================================================================================================*/
 
 int menu_clientes();
 
-int cadastro_cliente(Cliente *fim_cliente);
+int cadastro_cliente(Cliente *inicio_cli, Cliente *fim_cli, Funcionarios *inicio_fun, Funcionarios *fim_fun);
 
 int verificar_cpf_cliente(Cliente *cliente);
 
@@ -68,7 +69,7 @@ void apagar_cliente(Cliente *inicio, Cliente **fim);
 
 Cliente *busca_cliente(Cliente *inicio, Cliente *fim, char cpf_alvo[12], int *Flag);
 
-void atualizar_infos_cliente(Cliente *inicio, Cliente *fim);
+void atualizar_infos_cliente(Cliente *inicio_cli, Cliente *fim_cli, Funcionarios *inicio_fun, Funcionarios *fim_fun);
 
 int verificar_nome_cliente(Cliente *cli);
 
@@ -102,7 +103,7 @@ int main()
                 {
                     if (fim_funcionario < (inicio_funcionario + 5))
                     {
-                        if(cadastro_funcio(fim_funcionario)==1){
+                        if (cadastro_funcio(inicio_funcionario, fim_funcionario, inicio_cliente, fim_cliente) == 1) {
                             printf("\n");
                             fim_funcionario++;
                         }
@@ -114,7 +115,7 @@ int main()
                 }
                 else if (opcao_funcionario == 3)
                 {
-                    atualizar_infos_funcionarios(inicio_funcionario, fim_funcionario);
+                    atualizar_infos_funcionarios(inicio_funcionario, fim_funcionario, inicio_cliente, fim_cliente);
                 }
                 else if (opcao_funcionario == 4)
                 {
@@ -134,9 +135,9 @@ int main()
                 if (opcao_cliente == 1)
                 {
                     if(fim_cliente<(inicio_cliente+5)){
-                        if(cadastro_cliente(fim_cliente)==1){
-                        printf("\n");
-                        fim_cliente++;
+                        if (cadastro_cliente(inicio_cliente, fim_cliente, inicio_funcionario, fim_funcionario) == 1) {
+                            printf("\n");
+                            fim_cliente++;
                         }
                     }
                 }
@@ -146,7 +147,7 @@ int main()
                 }
 
                 if(opcao_cliente==3){
-                    atualizar_infos_cliente(inicio_cliente, fim_cliente);
+                    void atualizar_infos_cliente(Cliente *inicio_cli, Cliente *fim_cli, Funcionarios *inicio_fun, Funcionarios *fim_fun);
                 }
 
                 if(opcao_cliente==4){
@@ -195,6 +196,20 @@ int cancelar_operacao(){
     scanf("%d", &opcao_cancelar);
     
     return opcao_cancelar;
+}
+
+int busca_cpf_geral(Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *inicio_cli, Cliente *fim_cli, char *cpf_procurado) {
+    for (Funcionarios *pf = inicio_fun; pf < fim_fun; pf++) {
+        if (strcmp(pf->cpf_funcionario, cpf_procurado) == 0) {
+            return 1;
+        }
+    }
+    for (Cliente *c = inicio_cli; c < fim_cli; c++) {
+        if (strcmp(c->cpf_cliente, cpf_procurado) == 0) {
+            return 1;
+        }
+    }
+    return 0;
 }
 // Comeco funcionario==================================================================================================================================================*/
 
@@ -264,28 +279,24 @@ int verificar_cargo_fun(Funcionarios *func)
     return flag;
 }
 
-int cadastro_funcio(Funcionarios *fim){
+int cadastro_funcio(Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *inicio_cli, Cliente *fim_cli){
+
     if(cancelar_operacao() == 2) {
         printf("\nOperacao de cadastro cancelada.\n");
         return 0;
     }
 
     int verifnomefun;
-    do
-    {
+    do {
         printf("\nEscreva o nome do Funcionario: ");
-        scanf(" %59[^\n]", fim->nome_funcionario);
+        scanf(" %59[^\n]", fim_fun->nome_funcionario);
         char sobra = getchar();
-        if (sobra != '\n')
-        {
-            printf("\nErro: Nome longo demais! Use no maximo 59 caracteres.\n");
+        if (sobra != '\n') {
+            printf("\nErro: Nome longo demais!\n");
             while (getchar() != '\n');
             verifnomefun = 1;
-        }
-        else
-        {
-            verifnomefun = verificar_nome_fun(fim);
-
+        } else {
+            verifnomefun = verificar_nome_fun(fim_fun);
             if (verifnomefun == 1)
             {
                 printf("\nNome Digitado invalido (contem numeros), tente novamente.\n");
@@ -294,37 +305,25 @@ int cadastro_funcio(Funcionarios *fim){
     } while (verifnomefun == 1);
 
     int verifcpffun = 0;
+    do{
+        printf("\nEscreva o cpf do funcionario (11 digitos): ");
+        scanf(" %[^\n]", fim_fun->cpf_funcionario);
+        verifcpffun = verificar_cpf_fun(fim_fun);
 
-    do
-    {
-        printf("\nEscreva o cpf do funcionario sem espacos pontos e tracos: ");
-        scanf(" %[^\n]", fim->cpf_funcionario);
-        if (strlen(fim->cpf_funcionario) > 11)
-        {
-            printf("\nCpf Invalido, possui numeros em execesso, tente novamente\n");
-            verifcpffun = 1;
-        }
-        else if (strlen(fim->cpf_funcionario) < 11)
-        {
-            printf("\nCpf com numeros em falta, tente novamente\n");
-            verifcpffun = 1;
-        }
-        else
-        {
-            verifcpffun = verificar_cpf_fun(fim);
-            if (verifcpffun == 1)
-            {
-                printf("\nCpf Digitado invalido (contem letras), tente novamente.\n");
+        if (verifcpffun == 0) {
+            if (busca_cpf_geral(inicio_fun, fim_fun, inicio_cli, fim_cli, fim_fun->cpf_funcionario)) {
+                printf("\nErro: Este CPF ja esta cadastrado no sistema (como cliente ou funcionario)!\n");
+                verifcpffun = 1;
             }
         }
-    } while (verifcpffun == 1);
+    }while (verifcpffun == 1);
 
     int verifcargo = 0;
 
     do
     {
         printf("\nEscreva o cargo do funcionario: ");
-        scanf(" %29[^\n]", fim->cargo_funcionario);
+        scanf(" %29[^\n]", fim_fun->cargo_funcionario);
         char teste = getchar();
         if (teste != '\n')
         {
@@ -335,7 +334,7 @@ int cadastro_funcio(Funcionarios *fim){
         }
         else
         {
-            verifcargo = verificar_cargo_fun(fim);
+            verifcargo = verificar_cargo_fun(fim_fun);
             if (verifcargo == 1)
             {
                 printf("\nCargo Invalido (Possui Numeros),tente novamente\n");
@@ -348,7 +347,7 @@ int cadastro_funcio(Funcionarios *fim){
     do
     {
         printf("\nEscreva o valor do salario do funcionario:");
-        if (scanf(" %f", &fim->salario_funcionario) == 1)
+        if (scanf(" %f", &fim_fun->salario_funcionario) == 1)
         {
             int sobra = getchar();
             if (sobra != '\n' && sobra != ' ')
@@ -458,9 +457,9 @@ void ler_info_func(Funcionarios *inicio, Funcionarios *fim)
     }
 }
 
-void atualizar_infos_funcionarios(Funcionarios *inicio, Funcionarios *fim)
+void atualizar_infos_funcionarios(Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *inicio_cli, Cliente *fim_cli)
 {   
-    if (inicio == fim) {
+    if (inicio_fun == fim_fun) {
         printf("\nNenhum funcionario cadastrado para atualizar.\n");
         return; 
     }
@@ -477,10 +476,27 @@ void atualizar_infos_funcionarios(Funcionarios *inicio, Funcionarios *fim)
     {
         printf("\nDigite o cpf (somente numeros sem barras ou tracos) do funcionario que deseja atualizar os dados do cadastro: ");
         scanf(" %[^\n]", cpf_achar);
-        funcionario_achado = busca_funcionario(inicio, fim, cpf_achar, Flag);
+        funcionario_achado = busca_funcionario(inicio_fun, fim_fun, cpf_achar, Flag);
     } while (flag == 1);
+
     if (flag == 0)
     {
+        int verifcpffun = 0;
+        do {
+            printf("\nDigite o novo cpf do funcionario (11 digitos): ");
+            scanf(" %[^\n]", funcionario_achado->cpf_funcionario);
+            while (getchar() != '\n');
+
+            verifcpffun = verificar_cpf_fun(funcionario_achado);
+
+            if (verifcpffun == 0) {
+                if (busca_cpf_geral(inicio_fun, fim_fun, inicio_cli, fim_cli, funcionario_achado->cpf_funcionario)) {
+                    printf("\nErro: Este CPF ja esta cadastrado no sistema (como cliente ou funcionario)!\n");
+                    verifcpffun = 1;
+                }
+            }
+        } while (verifcpffun == 1);
+
         int verifnomefun;
         do
         {
@@ -597,9 +613,8 @@ int verificar_cpf_cliente(Cliente *cliente){
     return 0;
 }
 
-int cadastro_cliente(Cliente *fim_cliente) {
-    
-   if(cancelar_operacao() == 2) {
+int cadastro_cliente(Cliente *inicio_cli, Cliente *fim_cliente, Funcionarios *inicio_fun, Funcionarios *fim_fun) {
+    if(cancelar_operacao() == 2) {
         printf("\nOperacao de cadastro cancelada.\n");
         return 0;
     }
@@ -609,17 +624,20 @@ int cadastro_cliente(Cliente *fim_cliente) {
     while (getchar() != '\n');
 
     int verif_cpf_cli = 0;
-    do {
+    do{
         printf("Escreva o cpf do cliente (somente 11 numeros): ");
         scanf(" %11s", fim_cliente->cpf_cliente);
         while (getchar() != '\n');
 
-        verif_cpf_cli = verificar_cpf_cliente(fim_cliente);
+        verif_cpf_cli = verificar_cpf_cliente(fim_cliente); 
         
-        if (verif_cpf_cli == 1) {
-            printf("CPF Invalido, tente novamente.\n");
+        if (verif_cpf_cli == 0) {
+            if (busca_cpf_geral(inicio_fun, fim_fun, inicio_cli, fim_cliente, fim_cliente->cpf_cliente)) {
+                printf("Erro: Este CPF ja esta cadastrado no sistema (Cliente ou Funcionario).\n");
+                verif_cpf_cli = 1;
+            }
         }
-    } while (verif_cpf_cli == 1);
+    }while (verif_cpf_cli == 1);
 
     printf("Escreva o telefone do cliente (somente numeros): ");
     scanf("%11lld", &fim_cliente->telefone_cliente);
@@ -722,10 +740,9 @@ void apagar_cliente(Cliente *inicio, Cliente **fim){
         printf("\nOperacao de remocao cancelada.\n");
 }
 
-void atualizar_infos_cliente(Cliente *inicio, Cliente *fim)
+void atualizar_infos_cliente(Cliente *inicio_cli, Cliente *fim_cli, Funcionarios *inicio_fun, Funcionarios *fim_fun)
 {
-
-    if (inicio == fim) {
+    if (inicio_cli == fim_cli) {
         printf("\nNenhum cliente cadastrado para atualizar.\n");
         return; 
     }
@@ -742,10 +759,28 @@ void atualizar_infos_cliente(Cliente *inicio, Cliente *fim)
     {
         printf("\nDigite o cpf do cliente que deseja atualizar os dados do cadastro (somente numeros sem barras ou tracos): ");
         scanf(" %[^\n]", cpf_achar);
-        cliente_achado = busca_cliente(inicio, fim, cpf_achar, Flag);
+        cliente_achado = busca_cliente(inicio_cli, fim_cli, cpf_achar, Flag);
     } while (flag == 1);
     if (flag == 0)
     {
+        int verif_cpf_cli = 0;
+        do {
+            printf("\nDigite o novo cpf do cliente (11 digitos): ");
+            scanf(" %[^\n]", cliente_achado->cpf_cliente);
+            while (getchar() != '\n'); // Limpa buffer
+
+            // 1. Verifica o formato usando sua função de cliente
+            verif_cpf_cli = verificar_cpf_cliente(cliente_achado);
+
+            if (verif_cpf_cli == 0) {
+                // 2. Verifica se o CPF já existe no sistema todo (Valor Único)
+                if (busca_cpf_geral(inicio_fun, fim_fun, inicio_cli, fim_cli, cliente_achado->cpf_cliente)) {
+                    printf("\nErro: Este CPF ja esta cadastrado no sistema (como cliente ou funcionario)!\n");
+                    verif_cpf_cli = 1;
+                }
+            }
+        } while (verif_cpf_cli == 1);
+
         int verifnomecliente;
         do
         {
