@@ -2,18 +2,6 @@
 #include <string.h>
 #include <ctype.h>
 
-/*   printf("\n");
-    int opcao_cancelar;
-    do{
-        opcao_cancelar=cancelar_operacao();
-        if (opcao_cancelar!=1 && opcao_cancelar!=2) {
-            printf("Opcao invalida! Tente novamente.\n\n");
-        }
-    }while(opcao_cancelar!=1 && opcao_cancelar!=2);
-    
-    if(opcao_cancelar==2) return 0;
-    else{*/
-
 typedef struct
 {
     char cpf_funcionario[12];
