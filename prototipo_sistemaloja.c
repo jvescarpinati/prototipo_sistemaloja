@@ -391,17 +391,17 @@ int cadastro_funcio(Funcionarios *fim){
 void apagar_funcionario(Funcionarios *inicio, Funcionarios **fim)
 {
     if (inicio == fim) {
-        printf("Nenhum funcionario cadastrado para apagar.\n");
+        printf("\nNenhum funcionario cadastrado para apagar.\n");
         return; 
     }
     if (cancelar_operacao() == 2) {
-        printf("Retornando ao menu anterior...\n");
+        printf("\nRetornando ao menu anterior...\n");
         return;
     }
 
     char cpf[12];
     int flag_busca;
-    printf("Digite o cpf do funcionario que deseja remover: ");
+    printf("\nDigite o cpf do funcionario que deseja remover: ");
     scanf("%s", cpf);
 
     Funcionarios *alvo = busca_funcionario(inicio, *fim, cpf, &flag_busca);
