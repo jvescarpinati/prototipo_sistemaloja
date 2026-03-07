@@ -1,7 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <windows.h>
 
 typedef struct
 {
@@ -9,7 +9,6 @@ typedef struct
     char nome_funcionario[60];
     float salario_funcionario;
     char cargo_funcionario[30];
-
 } Funcionarios;
 
 typedef struct
@@ -29,94 +28,61 @@ typedef struct
     int dia;
     int mes;
     int ano;
-    char hora[8];
-
+    char hora[9];
 } Venda;
 
 int menu_geral();
-
 int cancelar_operacao();
+int busca_cpf_geral(Funcionarios *v_funcionario, int num_funcionario, Cliente *v_cliente, int num_cliente, char *cpf_procurado);
 
-int busca_cpf_geral(Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *inicio_cli, Cliente *fim_cli, char *cpf_procurado);
-
-/*Comeco funcionario==================================================================================================================================================*/
-
+/*Comeco funcionario===================================================================================================*/
 int menu_funcionarios();
-
 int verificar_nome_fun(Funcionarios *funci);
-
 int verificar_cpf_fun(Funcionarios *funci);
-
 int verificar_cargo_fun(Funcionarios *func);
+int cadastro_funcio(Funcionarios *v_funcionario, int i, Cliente *v_cliente, int total_cli);
+void apagar_funcionario(Funcionarios **v_funcionario, int *t_funcionario, int *cap_funcionario, Venda *v_venda, int t_vendas);
+Funcionarios *busca_funcionario(Funcionarios *vf, int n, char *cpf, int *flag);
+void ler_info_func(Funcionarios *v_funcionario, int num_func);
+void atualizar_infos_funcionarios(Funcionarios *v_funcionario, int t_funcionarios, Cliente *v_cliente, int t_clientes);
 
-int cadastro_funcio(Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *inicio_cli, Cliente *fim_cli);
-
-void apagar_funcionario(Funcionarios *inicio, Funcionarios **fim);
-
-Funcionarios *busca_funcionario(Funcionarios *inicio, Funcionarios *fim, char cpf_achar[12], int *Flag);
-
-void ler_info_func(Funcionarios *inicio, Funcionarios *fim);
-
-void atualizar_infos_funcionarios(Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *inicio_cli, Cliente *fim_cli);
-/*Fim funcionario=====================================================================================================================================
-
-Começo clientes=====================================================================================================================================*/
-
+/*Começo clientes======================================================================================================*/
 int menu_clientes();
-
-int cadastro_cliente(Cliente *inicio_cli, Cliente *fim_cli, Funcionarios *inicio_fun, Funcionarios *fim_fun);
-
+int cadastro_cliente(Cliente *v_cliente, int i, Funcionarios *v_funcionario, int total_func);
 int verificar_cpf_cliente(Cliente *cliente);
-
-void leitura_cliente(Cliente *inicio, Cliente *fim);
-
-void apagar_cliente(Cliente *inicio, Cliente **fim);
-
-Cliente *busca_cliente(Cliente *inicio, Cliente *fim, char cpf_alvo[12], int *Flag);
-
-void atualizar_infos_cliente(Cliente *inicio_cli, Cliente *fim_cli, Funcionarios *inicio_fun, Funcionarios *fim_fun);
-
+void leitura_cliente(Cliente *v_cliente, int t_clientes);
+void apagar_cliente(Cliente **v_cliente, int *t_cliente, int *cap_cliente, Venda *v_venda, int t_vendas);
+Cliente *busca_cliente(Cliente *vc, int n, char cpf_alvo[12], int *Flag);
+void atualizar_infos_cliente(Cliente *v_cliente, int t_clientes, Funcionarios *v_funcionario, int t_funcionarios);
 int verificar_nome_cliente(Cliente *cli);
-//fim clientes ======================================================================================================================================
 
-//começo vendas======================================================================================================================================
-
+//começo vendas========================================================================================================
 int menu_vendas();
+int cadastro_venda(Venda *v_venda, int i, Funcionarios *v_funcionario, int total_fun, Cliente *v_cliente, int total_cli);
+void leitura_venda(Venda *v_venda, int t_vendas);
+void apagar_venda(Venda **v_venda, int *t_venda, int *cap_venda);
+void atualizar_infos_venda(Venda *v_venda, int t_vendas, Funcionarios *v_funcionario, int t_funcionarios, Cliente *v_cliente, int t_clientes);
+Venda *busca_venda(Venda *vv, int n, int codigo_alvo, int *Flag);
 
-int cadastro_venda(Venda *inicio_v, Venda *fim_v, Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *inicio_cli, Cliente *fim_cli);
+int main()
+{
+    int opcao_geral;
+    int capacidade_funcionario = 5, total_funcionario = 0;
+    int capacidade_clientes = 5, total_clientes = 0;
+    int capacidade_venda = 5, total_venda = 0;
 
-void leitura_venda(Venda *inicio_v, Venda *fim_v);
+    Funcionarios *funcionarios = (Funcionarios *) malloc(capacidade_funcionario * sizeof(Funcionarios));
+    Cliente *clientes = (Cliente *) malloc(capacidade_clientes * sizeof(Cliente));
+    Venda *vendas = (Venda *) malloc(capacidade_venda * sizeof(Venda));
 
-void apagar_venda(Venda *inicio_v, Venda **fim_v);
-
-void atualizar_infos_venda(Venda *inicio_v, Venda *fim_v, Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *inicio_cli, Cliente *fim_cli);
-
-Venda *busca_venda(Venda *inicio_v, Venda *fim_v, int codigo_alvo, int *Flag);
-
-    int main()
+    printf("====Seja Bem-Vindo====\n");
+    do
     {
-        int opcao_geral;
+        opcao_geral = menu_geral();
 
-        Funcionarios funcionarios[5], *inicio_funcionario, *fim_funcionario;
-        inicio_funcionario = funcionarios;
-        fim_funcionario = inicio_funcionario;
-
-        Cliente clientes[5], *inicio_cliente, *fim_cliente;
-        inicio_cliente = &clientes[0];
-        fim_cliente = inicio_cliente;
-
-        Venda vendas[5], *inicio_venda, *fim_venda;
-        inicio_venda = vendas;
-        fim_venda = inicio_venda;;
-
-        printf("====Seja Bem-Vindo====\n");
-        do
+        switch (opcao_geral)
         {
-            opcao_geral = menu_geral();
-
-            switch (opcao_geral)
-            {
-            case 1: // funcionario
+            case 1: //funcionario
             {
                 int opcao_funcionario;
                 do
@@ -124,115 +90,154 @@ Venda *busca_venda(Venda *inicio_v, Venda *fim_v, int codigo_alvo, int *Flag);
                     opcao_funcionario = menu_funcionarios();
                     if (opcao_funcionario == 1)
                     {
-                        if (fim_funcionario < (inicio_funcionario + 5))
+                        if (total_funcionario == capacidade_funcionario)
                         {
-                            if (cadastro_funcio(inicio_funcionario, fim_funcionario, inicio_cliente, fim_cliente) == 1) {
-                                printf("\n");
-                            fim_funcionario++;
+                            int numero_funcionario; 
+                            printf("Quantos funcionarios deseja cadastrar? ");
+                            scanf("%d", &numero_funcionario);
+                            capacidade_funcionario += numero_funcionario;
+
+                            Funcionarios *temp = (Funcionarios *) realloc(funcionarios, capacidade_funcionario * sizeof(Funcionarios));
+                            if (temp == NULL) {
+                                printf("Erro de memoria\n");
+                                exit(0);
+                            }
+                            funcionarios = temp; 
                         }
-                    }
-                }
-                else if (opcao_funcionario == 2)
-                {
-                    ler_info_func(inicio_funcionario, fim_funcionario);
-                }
-                else if (opcao_funcionario == 3)
-                {
-                    atualizar_infos_funcionarios(inicio_funcionario, fim_funcionario, inicio_cliente, fim_cliente);
-                }
-                else if (opcao_funcionario == 4)
-                {
-                    apagar_funcionario(inicio_funcionario, &fim_funcionario);
-                }
-            } while (opcao_funcionario != 5 && opcao_funcionario != 0);
 
-            break;
-        }
-        case 2: // cliente
-        {
-            int opcao_cliente;
-            do
-            {
-                opcao_cliente = menu_clientes();
-
-                if (opcao_cliente == 1)
-                {
-                    if(fim_cliente<(inicio_cliente+5)){
-                        if (cadastro_cliente(inicio_cliente, fim_cliente, inicio_funcionario, fim_funcionario) == 1) {
-                            printf("\n");
-                            fim_cliente++;
-                        }
-                    }
-                }
-
-                if(opcao_cliente==2){
-                    leitura_cliente(inicio_cliente, fim_cliente);
-                }
-
-                if(opcao_cliente==3){
-                    atualizar_infos_cliente(inicio_cliente, fim_cliente, inicio_funcionario, fim_funcionario);
-                }
-
-                if(opcao_cliente==4){
-                    apagar_cliente(inicio_cliente, &fim_cliente);
-                }
-
-            } while (opcao_cliente != 5);
-
-            break;
-        }
-
-        case 3:
-        {
-           int opcao_vendas;
-            do
-            {
-                opcao_vendas = menu_vendas();
-
-                if (opcao_vendas == 1)
-                {
-                    if (fim_venda < (inicio_venda + 5))
-                    {
-                        if (cadastro_venda(inicio_venda, fim_venda, inicio_funcionario, fim_funcionario, inicio_cliente, fim_cliente))
+                        if (total_funcionario < capacidade_funcionario)
                         {
-                            printf("\n");
-                            fim_venda++;
+                            if (cadastro_funcio(funcionarios, total_funcionario, clientes, total_clientes) == 1)
+                            {
+                                total_funcionario++;
+                                printf("\nCadastro Realizado com sucesso!\n");
+                            }
                         }
                     }
-                    else
+                    else if (opcao_funcionario == 2)
                     {
-                        printf("\nLimite de vendas atingido.\n");
+                        ler_info_func(funcionarios, total_funcionario);
                     }
-                }
+                    else if (opcao_funcionario == 3)
+                    {
+                        atualizar_infos_funcionarios(funcionarios, total_funcionario, clientes, total_clientes);
+                    }
+                    else if (opcao_funcionario == 4)
+                    {
+                        apagar_funcionario(&funcionarios, &total_funcionario, &capacidade_funcionario, vendas, total_venda);
+                    }
+                } while (opcao_funcionario != 5 && opcao_funcionario != 0);
 
-                if (opcao_vendas == 2)
+                break;
+            }
+            case 2: // cliente
+            {
+                int opcao_cliente;
+                do
                 {
-                    leitura_venda(inicio_venda, fim_venda);
-                }
+                    opcao_cliente = menu_clientes();
+                    if (opcao_cliente == 1)
+                    {
+                        if (total_clientes == capacidade_clientes)
+                        {
+                            int numero_cli; 
+                            printf("Quantos clientes adicionais voce deseja cadastrar?\n");
+                            scanf("%d", &numero_cli);
+                            capacidade_clientes += numero_cli;
 
-                if (opcao_vendas == 3)
+                            Cliente *temp = (Cliente *) realloc(clientes, capacidade_clientes * sizeof(Cliente));
+                            if (temp == NULL) {
+                                printf("Erro de memoria\n");
+                                exit(0);
+                            }
+                            clientes = temp;
+                        }
+
+                        if (total_clientes < capacidade_clientes)
+                        {
+                            if (cadastro_cliente(clientes, total_clientes, funcionarios, total_funcionario) == 1)
+                            {
+                                total_clientes++;
+                                printf("\nCadastro de cliente realizado com sucesso!\n");
+                            }
+                        }
+                    }
+                    else if (opcao_cliente == 2)
+                    {
+                        leitura_cliente(clientes, total_clientes);
+                    }
+                    else if (opcao_cliente == 3)
+                    {
+                        atualizar_infos_cliente(clientes, total_clientes, funcionarios, total_funcionario);
+                    }
+                    else if (opcao_cliente == 4)
+                    {
+                        apagar_cliente(&clientes, &total_clientes, &capacidade_clientes, vendas, total_venda);
+                    }
+
+                } while (opcao_cliente != 5);
+
+                break;
+            }
+            case 3: //venda
+            {
+                int opcao_vendas;
+                do
                 {
-                    atualizar_infos_venda(inicio_venda, fim_venda, inicio_funcionario, fim_funcionario, inicio_cliente, fim_cliente);
-                }
+                    opcao_vendas = menu_vendas();
 
-                if (opcao_vendas == 4)
-                {
-                    apagar_venda(inicio_venda, &fim_venda);
-                }
+                    if (opcao_vendas == 1)
+                    {
+                        if (total_venda == capacidade_venda)
+                        {
+                            int numero_venda; 
+                            printf("Quantas vendas adicionais voce deseja cadastrar?\n");
+                            scanf("%d", &numero_venda);
+                            capacidade_venda += numero_venda;
 
-            } while (opcao_vendas != 5);
+                            Venda *temp = (Venda *) realloc(vendas, capacidade_venda * sizeof(Venda));
+                            if (temp == NULL) {
+                                printf("Erro de memoria\n");
+                                exit(0);
+                            }
+                            vendas = temp;
+                        }
+
+                        if (total_venda < capacidade_venda)
+                        {
+                            if (cadastro_venda(vendas, total_venda, funcionarios, total_funcionario, clientes, total_clientes) == 1)
+                            {
+                                total_venda++;
+                                printf("\nCadastro de venda realizado com sucesso!\n");
+                            }
+                        }
+                    }
+                    else if (opcao_vendas == 2)
+                    {
+                        leitura_venda(vendas, total_venda);
+                    }
+                    else if (opcao_vendas == 3)
+                    {
+                        atualizar_infos_venda(vendas, total_venda, funcionarios, total_funcionario, clientes, total_clientes);
+                    }
+                    else if (opcao_vendas == 4)
+                    {
+                        apagar_venda(&vendas, &total_venda, &capacidade_venda);
+                    }
+
+                } while (opcao_vendas != 5);
+                break;
+            }
         }
+    } while (opcao_geral != 8);
 
+    printf("\n\nSaindo do Programa...\n\n");
+    
+    free(funcionarios);
+    free(clientes);
+    free(vendas);
 
-    }
-}
-while (opcao_geral != 8);
-
-
-
-printf("\n\nSaindo do Programa...\n\n");
-
-return 0;
+    return 0;
 }
 
 int menu_geral()
@@ -264,17 +269,17 @@ int cancelar_operacao(){
     return opcao_cancelar;
 }
 
-int busca_cpf_geral(Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *inicio_cli, Cliente *fim_cli, char *cpf_procurado) {
-    for (Funcionarios *pf = inicio_fun; pf < fim_fun; pf++) {
-        if (strcmp(pf->cpf_funcionario, cpf_procurado) == 0) return 1;
+int busca_cpf_geral(Funcionarios *v_funcionario, int num_funcionario, Cliente *v_cliente, int num_cliente, char *cpf_procurado){
+    for (int pf = 0; pf < num_funcionario; pf++) {
+        if (strcmp(v_funcionario[pf].cpf_funcionario, cpf_procurado) == 0) return 1;
     }
-    for (Cliente *pc = inicio_cli; pc < fim_cli; pc++) {
-        if (strcmp(pc->cpf_cliente, cpf_procurado) == 0) return 2;
+    for (int pc = 0; pc < num_cliente; pc++) {
+        if (strcmp(v_cliente[pc].cpf_cliente, cpf_procurado) == 0) return 2;
     }
     return 0;
 }
 
-// Comeco funcionario==================================================================================================================================================*/
+// Comeco funcionario===================================================================================================
 
 int menu_funcionarios(){
     printf("\nEscolha uma opcao de alteracao para os funcionarios: \n");
@@ -287,7 +292,6 @@ int menu_funcionarios(){
     printf("Escolha uma opcao: ");
     scanf(" %d", &opcao);
     return opcao;
-
 }
 
 int verificar_nome_fun(Funcionarios *funci)
@@ -308,8 +312,7 @@ int verificar_nome_fun(Funcionarios *funci)
 int verificar_cpf_fun(Funcionarios *funci)
 {
     int i = 0;
-    if (funci->cpf_funcionario[0] == '\0')
-        return 1;
+    if (funci->cpf_funcionario[0] == '\0') return 1;
 
     while (funci->cpf_funcionario[i] != '\0')
     {
@@ -342,7 +345,7 @@ int verificar_cargo_fun(Funcionarios *func)
     return flag;
 }
 
-int cadastro_funcio(Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *inicio_cli, Cliente *fim_cli){
+int cadastro_funcio(Funcionarios *v_funcionario, int i, Cliente *v_cliente, int total_cli){
 
     if(cancelar_operacao() == 2) {
         printf("\nOperacao de cadastro cancelada.\n");
@@ -352,85 +355,68 @@ int cadastro_funcio(Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *in
     int verifnomefun;
     do {
         printf("\nEscreva o nome do Funcionario: ");
-        scanf(" %59[^\n]", fim_fun->nome_funcionario);
+        scanf(" %59[^\n]", v_funcionario[i].nome_funcionario);
+        
         char sobra = getchar();
         if (sobra != '\n') {
             printf("\nErro: Nome longo demais!\n");
             while (getchar() != '\n');
             verifnomefun = 1;
         } else {
-            verifnomefun = verificar_nome_fun(fim_fun);
-            if (verifnomefun == 1)
-            {
+            verifnomefun = verificar_nome_fun(&v_funcionario[i]);
+            if (verifnomefun == 1) {
                 printf("Nome Digitado invalido (contem numeros), tente novamente.\n");
             }
         }
     } while (verifnomefun == 1);
 
     int verifcpffun = 0;
-    do{
+    do {
         printf("Escreva o cpf do funcionario (11 digitos): ");
-        scanf(" %[^\n]", fim_fun->cpf_funcionario);
-        verifcpffun = verificar_cpf_fun(fim_fun);
+        scanf(" %[^\n]", v_funcionario[i].cpf_funcionario);
+        verifcpffun = verificar_cpf_fun(&v_funcionario[i]);
 
         if (verifcpffun == 0) {
-            if (busca_cpf_geral(inicio_fun, fim_fun, inicio_cli, fim_cli, fim_fun->cpf_funcionario)) {
-                printf("Erro: Este CPF ja esta cadastrado no sistema (como cliente ou funcionario)!\n");
+            if (busca_cpf_geral(v_funcionario, i, v_cliente, total_cli, v_funcionario[i].cpf_funcionario)!=0) {
+                printf("Erro: Este CPF ja esta cadastrado no sistema!\n");
                 verifcpffun = 1;
             }
         }
-    }while (verifcpffun == 1);
+    } while (verifcpffun == 1);
 
     int verifcargo = 0;
-
-    do
-    {
+    do {
         printf("Escreva o cargo do funcionario: ");
-        scanf(" %29[^\n]", fim_fun->cargo_funcionario);
+        scanf(" %29[^\n]", v_funcionario[i].cargo_funcionario);
+        
         char teste = getchar();
-        if (teste != '\n')
-        {
+        if (teste != '\n') {
             printf("Cargo Excede Limite de caracteres\n");
-            while (getchar() != '\n')
-                ;
+            while (getchar() != '\n');
             verifcargo = 1;
-        }
-        else
-        {
-            verifcargo = verificar_cargo_fun(fim_fun);
-            if (verifcargo == 1)
-            {
-                printf("Cargo Invalido (Possui Numeros),tente novamente\n");
+        } else {
+            verifcargo = verificar_cargo_fun(&v_funcionario[i]);
+            if (verifcargo == 1) {
+                printf("Cargo Invalido (Possui Numeros), tente novamente\n");
             }
         }
     } while (verifcargo == 1);
 
     int verifsalario = 0;
-
-    do
-    {
-        printf("Escreva o valor do salario do funcionario:");
-        if (scanf(" %f", &fim_fun->salario_funcionario) == 1)
-        {
+    do {
+        printf("Escreva o valor do salario do funcionario: ");
+        if (scanf(" %f", &v_funcionario[i].salario_funcionario) == 1) {
             int sobra = getchar();
-            if (sobra != '\n' && sobra != ' ')
-            {
+            if (sobra != '\n' && sobra != ' ') {
                 printf("Erro: Entrada invalida. Nao use letras ou virgulas.\n");
-
-                while (getchar() != '\n')
-                    ;
+                while (getchar() != '\n');
                 verifsalario = 1;
-            }
-            else
-            {
+            } else {
                 verifsalario = 0;
             }
-        }
-        else
-        {
+        } else {
             printf("Erro: Voce nao digitou um numero valido.\n");
-            while (getchar() != '\n')
-                ;
+            while (getchar() != '\n');
             verifsalario = 1;
         }
     } while (verifsalario == 1);
@@ -438,9 +424,9 @@ int cadastro_funcio(Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *in
     return 1;
 }
 
-void apagar_funcionario(Funcionarios *inicio, Funcionarios **fim)
+void apagar_funcionario(Funcionarios **v_funcionario, int *t_funcionario, int *cap_funcionario, Venda *v_venda, int t_vendas)
 {
-    if (inicio == fim) {
+    if (*t_funcionario==0) {
         printf("\nNenhum funcionario cadastrado para apagar.\n");
         return;
     }
@@ -454,45 +440,56 @@ void apagar_funcionario(Funcionarios *inicio, Funcionarios **fim)
     printf("\nDigite o cpf do funcionario que deseja remover: ");
     scanf("%s", cpf);
 
-    Funcionarios *alvo = busca_funcionario(inicio, *fim, cpf, &flag_busca);
+    // RESTRIÇÃO: Verificar se o funcionário está em alguma venda
+    for (int i = 0; i < t_vendas; i++) {
+        if (strcmp(v_venda[i].cpf_funcionario, cpf) == 0) {
+            printf("\nErro: Funcionario nao pode ser removido pois esta associado a uma ou mais vendas.\n");
+            return;
+        }
+    }
+
+    Funcionarios *alvo = busca_funcionario(*v_funcionario, *t_funcionario, cpf, &flag_busca);
 
     if (alvo != NULL)
     {
-        Funcionarios *fun;
-        for (fun = alvo; fun < (*fim - 1); fun++)
-        {
-            *fun = *(fun + 1);
+        int indice_alvo=alvo-(*v_funcionario);
+        for(int j=indice_alvo; j<(*t_funcionario-1); j++){
+            (*v_funcionario)[j] = (*v_funcionario)[j+1];
         }
 
-        (*fim)--;
+        (*t_funcionario)--;
+
+        if(*t_funcionario>0){
+            *cap_funcionario=*t_funcionario;
+
+            Funcionarios *temp = (Funcionarios *) realloc(*v_funcionario, (*cap_funcionario) * sizeof(Funcionarios));
+            if(temp==NULL){
+                printf("Erro de memoria\n");
+                exit(0);
+            }
+            *v_funcionario=temp;
+        }
         printf("\nSucesso: Funcionario removido.\n");
     }
-
     else
-        printf("\nOperacao de remocao cancelada.\n");
+        printf("\nErro: Funcionario nao encontrado\n");
 }
 
-Funcionarios *busca_funcionario(Funcionarios *inicio, Funcionarios *fim, char cpf_achar[12], int *Flag)
+Funcionarios *busca_funcionario(Funcionarios *vf, int n, char *cpf, int *flag)
 {
-    Funcionarios *usuario_achado;
-    Funcionarios *inicio2 = inicio;
-    *Flag = 0;
-    for (inicio2 = inicio2; inicio2 < fim; inicio2++)
-    {
-        if (strcmp(inicio2->cpf_funcionario, cpf_achar) == 0)
-        {
-            usuario_achado = inicio2;
-            return usuario_achado;
+    *flag = 1;
+    for (int i = 0; i < n; i++) {
+        if (strcmp(vf[i].cpf_funcionario, cpf) == 0) {
+            *flag = 0;
+            return &vf[i];
         }
     }
-    printf("\nErro: Usuario nao encontrado, tente novamente\n");
-    *Flag = 1;
     return NULL;
 }
 
-void ler_info_func(Funcionarios *inicio, Funcionarios *fim)
+void ler_info_func(Funcionarios *v_funcionario, int t_funcionarios)
 {
-    if (inicio == fim) {
+    if (t_funcionarios==0) {
         printf("\nNenhum funcionario cadastrado para visualizar.\n");
         return;
     }
@@ -507,10 +504,14 @@ void ler_info_func(Funcionarios *inicio, Funcionarios *fim)
     Funcionarios *funcionario_achado;
     do
     {
-        printf("\nDigite o cpf (somente numeros sem barras ou tracos) do funcionario que deseja ler os dados do cadastro: ");
-        scanf(" %[^\n]", cpf_achar);
-        funcionario_achado = busca_funcionario(inicio, fim, cpf_achar, Flag);
+        printf("\nDigite o CPF (somente numeros sem barras ou tracos) do funcionario que deseja ler: ");
+        scanf(" %s", cpf_achar);
+        funcionario_achado = busca_funcionario(v_funcionario, t_funcionarios, cpf_achar, Flag);
+
+        if (flag == 1) printf("\nFuncionario nao encontrado!\n");
+
     } while (flag == 1);
+    
     if (flag == 0)
     {
         printf("\nNome : %s\n", funcionario_achado->nome_funcionario);
@@ -520,9 +521,9 @@ void ler_info_func(Funcionarios *inicio, Funcionarios *fim)
     }
 }
 
-void atualizar_infos_funcionarios(Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *inicio_cli, Cliente *fim_cli)
+void atualizar_infos_funcionarios(Funcionarios *v_funcionario, int t_funcionarios, Cliente *v_cliente, int t_clientes)
 {
-    if (inicio_fun == fim_fun) {
+    if (t_funcionarios==0) {
         printf("\nNenhum funcionario cadastrado para atualizar.\n");
         return;
     }
@@ -537,9 +538,9 @@ void atualizar_infos_funcionarios(Funcionarios *inicio_fun, Funcionarios *fim_fu
     Funcionarios *funcionario_achado;
     do
     {
-        printf("\nDigite o cpf (somente numeros sem barras ou tracos) do funcionario que deseja atualizar os dados do cadastro: ");
-        scanf(" %[^\n]", cpf_achar);
-        funcionario_achado = busca_funcionario(inicio_fun, fim_fun, cpf_achar, Flag);
+        printf("\nDigite o cpf (somente numeros) do funcionario que deseja atualizar: ");
+        scanf(" %s", cpf_achar);
+        funcionario_achado = busca_funcionario(v_funcionario, t_funcionarios, cpf_achar, Flag);
     } while (flag == 1);
 
     if (flag == 0)
@@ -548,19 +549,14 @@ void atualizar_infos_funcionarios(Funcionarios *inicio_fun, Funcionarios *fim_fu
         char novo_cpf[12];
         do {
             printf("\nDigite o novo cpf do funcionario (11 digitos): ");
-            scanf(" %[^\n]", novo_cpf);
+            scanf(" %s", novo_cpf);
             while (getchar() != '\n');
-            if (strcmp(novo_cpf, funcionario_achado->cpf_funcionario) != 0 &&
-                busca_cpf_geral(inicio_fun, fim_fun, inicio_cli, fim_cli, novo_cpf)) {
+            if (strcmp(novo_cpf, funcionario_achado->cpf_funcionario) != 0 && busca_cpf_geral(v_funcionario, t_funcionarios, v_cliente, t_clientes, novo_cpf)!=0) {
                 printf("\nErro: Este CPF ja esta cadastrado no sistema!\n");
                 verifcpffun = 1;
             } else {
-                char backup_local[12];
-                strcpy(backup_local, funcionario_achado->cpf_funcionario);
-
                 strcpy(funcionario_achado->cpf_funcionario, novo_cpf);
                 verifcpffun = verificar_cpf_fun(funcionario_achado);
-
             }
         } while (verifcpffun == 1);
 
@@ -573,14 +569,12 @@ void atualizar_infos_funcionarios(Funcionarios *inicio_fun, Funcionarios *fim_fu
             if (sobra != '\n')
             {
                 printf("\nErro: Nome longo demais! Use no maximo 59 caracteres.\n");
-                while (getchar() != '\n')
-                    ;
+                while (getchar() != '\n');
                 verifnomefun = 1;
             }
             else
             {
                 verifnomefun = verificar_nome_fun(funcionario_achado);
-
                 if (verifnomefun == 1)
                 {
                     printf("\nNome Digitado invalido (contem numeros), tente novamente.\n");
@@ -589,7 +583,6 @@ void atualizar_infos_funcionarios(Funcionarios *inicio_fun, Funcionarios *fim_fu
         } while (verifnomefun == 1);
 
         int verifcargo = 0;
-
         do
         {
             printf("\nDigite o cargo atualizado do funcionario: ");
@@ -598,8 +591,7 @@ void atualizar_infos_funcionarios(Funcionarios *inicio_fun, Funcionarios *fim_fu
             if (teste != '\n')
             {
                 printf("\nCargo Excede Limite de caracteres\n");
-                while (getchar() != '\n')
-                    ;
+                while (getchar() != '\n');
                 verifcargo = 1;
             }
             else
@@ -613,7 +605,6 @@ void atualizar_infos_funcionarios(Funcionarios *inicio_fun, Funcionarios *fim_fu
         } while (verifcargo == 1);
 
         int verifsalario = 0;
-
         do
         {
             printf("\nDigite o valor atualizado do salario do funcionario:");
@@ -623,9 +614,7 @@ void atualizar_infos_funcionarios(Funcionarios *inicio_fun, Funcionarios *fim_fu
                 if (sobra != '\n' && sobra != ' ')
                 {
                     printf("\nErro: Entrada invalida. Nao use letras ou virgulas.\n");
-
-                    while (getchar() != '\n')
-                        ;
+                    while (getchar() != '\n');
                     verifsalario = 1;
                 }
                 else
@@ -636,8 +625,7 @@ void atualizar_infos_funcionarios(Funcionarios *inicio_fun, Funcionarios *fim_fu
             else
             {
                 printf("\nErro: Voce nao digitou um numero valido.\n");
-                while (getchar() != '\n')
-                    ;
+                while (getchar() != '\n');
                 verifsalario = 1;
             }
             printf("\n");
@@ -645,8 +633,7 @@ void atualizar_infos_funcionarios(Funcionarios *inicio_fun, Funcionarios *fim_fu
     }
 }
 
-// Fim funcionario=====================================================================================================================================
-// Começo cliente======================================================================================================================================
+// Começo cliente======================================================================================================
 
 int menu_clientes()
 {
@@ -660,7 +647,6 @@ int menu_clientes()
     printf("Escolha uma opcao: ");
     scanf(" %d", &opcao);
     return opcao;
-
 }
 
 int verificar_cpf_cliente(Cliente *cliente){
@@ -680,26 +666,26 @@ int verificar_cpf_cliente(Cliente *cliente){
     return 0;
 }
 
-int cadastro_cliente(Cliente *inicio_cli, Cliente *fim_cliente, Funcionarios *inicio_fun, Funcionarios *fim_fun) {
+int cadastro_cliente(Cliente *v_cliente, int i, Funcionarios *v_funcionario, int total_funci) {
     if(cancelar_operacao() == 2) {
         printf("\nOperacao de cadastro cancelada.\n");
         return 0;
     }
 
     printf("\nEscreva o nome do Cliente: ");
-    scanf(" %59[^\n]", fim_cliente->nome_cliente);
+    scanf(" %59[^\n]", v_cliente[i].nome_cliente);
     while (getchar() != '\n');
 
     int verif_cpf_cli = 0;
     do{
         printf("Escreva o cpf do cliente (somente 11 numeros): ");
-        scanf(" %11s", fim_cliente->cpf_cliente);
+        scanf(" %11s", v_cliente[i].cpf_cliente);
         while (getchar() != '\n');
 
-        verif_cpf_cli = verificar_cpf_cliente(fim_cliente);
+        verif_cpf_cli = verificar_cpf_cliente(&v_cliente[i]);
 
         if (verif_cpf_cli == 0) {
-            if (busca_cpf_geral(inicio_fun, fim_fun, inicio_cli, fim_cliente, fim_cliente->cpf_cliente)==1 || busca_cpf_geral(inicio_fun, fim_fun, inicio_cli, fim_cliente, fim_cliente->cpf_cliente)==2) {
+            if (busca_cpf_geral(v_funcionario, total_funci, v_cliente, i, v_cliente[i].cpf_cliente)!=0) {
                 printf("Erro: Este CPF ja esta cadastrado no sistema (Cliente ou Funcionario).\n");
                 verif_cpf_cli = 1;
             }
@@ -707,31 +693,30 @@ int cadastro_cliente(Cliente *inicio_cli, Cliente *fim_cliente, Funcionarios *in
     }while (verif_cpf_cli == 1);
 
     printf("Escreva o telefone do cliente (somente numeros): ");
-    scanf("%11lld", &fim_cliente->telefone_cliente);
+    scanf("%11lld", &v_cliente[i].telefone_cliente);
     while (getchar() != '\n');
 
     do {
         printf("Escreva o genero (M/F): ");
-        scanf(" %1s", fim_cliente->genero_cliente);
+        scanf(" %1s", v_cliente[i].genero_cliente);
         while (getchar() != '\n');
 
-        if (fim_cliente->genero_cliente[0] >= 'a' && fim_cliente->genero_cliente[0] <= 'z') {
-            fim_cliente->genero_cliente[0] = fim_cliente->genero_cliente[0] - 32;
+        if (v_cliente[i].genero_cliente[0] >= 'a' && v_cliente[i].genero_cliente[0] <= 'z') {
+            v_cliente[i].genero_cliente[0] = v_cliente[i].genero_cliente[0] - 32;
         }
 
-        if (fim_cliente->genero_cliente[0] != 'M' && fim_cliente->genero_cliente[0] != 'F') {
+        if (v_cliente[i].genero_cliente[0] != 'M' && v_cliente[i].genero_cliente[0] != 'F') {
             printf("Erro: Opcao invalida. Digite M ou F.\n");
         }
-    } while (fim_cliente->genero_cliente[0] != 'M' && fim_cliente->genero_cliente[0] != 'F');
 
-    printf("\nSucesso: Cliente cadastrado!\n");
+    } while (v_cliente[i].genero_cliente[0] != 'M' && v_cliente[i].genero_cliente[0] != 'F');
 
     return 1;
 }
 
-void leitura_cliente(Cliente *inicio, Cliente *fim){
+void leitura_cliente(Cliente *v_cliente, int t_clientes){
 
-    if (inicio == fim) {
+    if (t_clientes == 0) {
         printf("\nNenhum cliente cadastrado para visualizar.\n");
         return;
     }
@@ -745,37 +730,35 @@ void leitura_cliente(Cliente *inicio, Cliente *fim){
     int *Flag = &flag;
     Cliente *cliente_achado;
     do{
-        printf("\nDigite o cpf (somente numeros sem barras ou tracos) do cliente que deseja ler os dados do cadastro: ");
+        printf("\nDigite o cpf (somente numeros sem barras ou tracos) do cliente que deseja ler os dados: ");
         scanf(" %[^\n]", cpf_alvo);
-        cliente_achado = busca_cliente(inicio, fim, cpf_alvo, Flag);
+        cliente_achado = busca_cliente(v_cliente, t_clientes, cpf_alvo, Flag);
     } while (flag == 1);
+    
     if (flag == 0){
         printf("\nNome: %s\n", cliente_achado->nome_cliente);
         printf("Cpf: %s\n", cliente_achado->cpf_cliente);
         printf("Telefone: %lld\n", cliente_achado->telefone_cliente);
-        if(*cliente_achado->genero_cliente == 'M' || *cliente_achado->genero_cliente == 'm') printf("Genero: Masculino\n\n");
+        if(cliente_achado->genero_cliente[0] == 'M') printf("Genero: Masculino\n\n");
         else printf("Genero: Feminino\n\n");
     }
 }
 
-Cliente *busca_cliente(Cliente *inicio, Cliente *fim, char cpf_alvo[12], int *Flag){
-    Cliente *cliente_achado;
-    *Flag=0;
-
-    for(Cliente *i=inicio; i<fim; i++){
-        if(strcmp(i->cpf_cliente, cpf_alvo)==0){
-            cliente_achado=i;
-            return cliente_achado;
+Cliente *busca_cliente(Cliente *vc, int n, char cpf_alvo[12], int *Flag){
+    *Flag = 1;
+    for(int i = 0; i < n; i++){
+        if(strcmp(vc[i].cpf_cliente, cpf_alvo)==0){
+            *Flag = 0;
+            return &vc[i];
         }
     }
     printf("\nErro: Cliente nao encontrado, tente novamente\n");
-    *Flag=1;
     return NULL;
 }
 
-void apagar_cliente(Cliente *inicio, Cliente **fim){
+void apagar_cliente(Cliente **v_cliente, int *t_cliente, int *cap_cliente, Venda *v_venda, int t_vendas){
 
-    if (inicio == fim) {
+    if (*t_cliente == 0) {
         printf("\nNenhum cliente cadastrado para apagar.\n");
         return;
     }
@@ -789,27 +772,45 @@ void apagar_cliente(Cliente *inicio, Cliente **fim){
     printf("\nDigite o cpf do cliente que deseja remover: ");
     scanf("%s", cpf);
 
-    Cliente *alvo = busca_cliente(inicio, *fim, cpf, &flag_busca);
+    // RESTRIÇÃO: Verificar se o cliente está em alguma venda
+    for (int i = 0; i < t_vendas; i++) {
+        if (strcmp(v_venda[i].cpf_cliente, cpf) == 0) {
+            printf("\nErro: Cliente nao pode ser removido pois esta associado a uma ou mais vendas.\n");
+            return;
+        }
+    }
+
+    Cliente *alvo = busca_cliente(*v_cliente, *t_cliente, cpf, &flag_busca);
 
     if (alvo != NULL)
     {
-        Cliente *cliente;
-        for (cliente = alvo; cliente < (*fim - 1); cliente++)
+        int indice_alvo = alvo - (*v_cliente);
+        for (int j = indice_alvo; j < (*t_cliente - 1); j++)
         {
-            *cliente = *(cliente + 1);
+            (*v_cliente)[j] = (*v_cliente)[j + 1];
         }
 
-        (*fim)--;
+        (*t_cliente)--;
+
+        if(*t_cliente > 0){
+            *cap_cliente = *t_cliente;
+
+            Cliente *temp = (Cliente *) realloc(*v_cliente, (*cap_cliente) * sizeof(Cliente));
+            if(temp == NULL){
+                printf("Erro de memoria\n");
+                exit(0);
+            }
+            *v_cliente = temp;
+        }
         printf("\nSucesso: Cliente removido.\n");
     }
-
     else
-        printf("\nOperacao de remocao cancelada.\n");
+        printf("\nOperacao de remocao cancelada ou falhou.\n");
 }
 
-void atualizar_infos_cliente(Cliente *inicio_cli, Cliente *fim_cli, Funcionarios *inicio_fun, Funcionarios *fim_fun)
+void atualizar_infos_cliente(Cliente *v_cliente, int t_clientes, Funcionarios *v_funcionario, int t_funcionarios)
 {
-    if (inicio_cli == fim_cli) {
+    if (t_clientes == 0) {
         printf("\nNenhum cliente cadastrado para atualizar.\n");
         return;
     }
@@ -824,10 +825,11 @@ void atualizar_infos_cliente(Cliente *inicio_cli, Cliente *fim_cli, Funcionarios
     Cliente *cliente_achado;
     do
     {
-        printf("\nDigite o cpf do cliente que deseja atualizar os dados do cadastro (somente numeros sem barras ou tracos): ");
+        printf("\nDigite o cpf do cliente que deseja atualizar (somente numeros sem barras ou tracos): ");
         scanf(" %[^\n]", cpf_achar);
-        cliente_achado = busca_cliente(inicio_cli, fim_cli, cpf_achar, Flag);
+        cliente_achado = busca_cliente(v_cliente, t_clientes, cpf_achar, Flag);
     } while (flag == 1);
+
     if (flag == 0)
     {
         int verif_cpf_cli = 0;
@@ -838,13 +840,10 @@ void atualizar_infos_cliente(Cliente *inicio_cli, Cliente *fim_cli, Funcionarios
             while (getchar() != '\n');
 
             if (strcmp(novo_cpf_cli, cliente_achado->cpf_cliente) != 0 &&
-                busca_cpf_geral(inicio_fun, fim_fun, inicio_cli, fim_cli, novo_cpf_cli)) {
+                busca_cpf_geral(v_funcionario, t_funcionarios, v_cliente, t_clientes, novo_cpf_cli)) {
                 printf("\nErro: Este CPF ja esta cadastrado no sistema!\n");
                 verif_cpf_cli = 1;
             } else {
-                char backup_cli[12];
-                strcpy(backup_cli, cliente_achado->cpf_cliente);
-
                 strcpy(cliente_achado->cpf_cliente, novo_cpf_cli);
                 verif_cpf_cli = verificar_cpf_cliente(cliente_achado);
             }
@@ -859,14 +858,12 @@ void atualizar_infos_cliente(Cliente *inicio_cli, Cliente *fim_cli, Funcionarios
             if (sobra != '\n')
             {
                 printf("\nErro: Nome longo demais! Use no maximo 59 caracteres.\n");
-                while (getchar() != '\n')
-                    ;
+                while (getchar() != '\n');
                 verifnomecliente = 1;
             }
             else
             {
                 verifnomecliente = verificar_nome_cliente(cliente_achado);
-
                 if (verifnomecliente == 1)
                 {
                     printf("\nNome Digitado invalido (contem numeros), tente novamente.\n");
@@ -874,27 +871,25 @@ void atualizar_infos_cliente(Cliente *inicio_cli, Cliente *fim_cli, Funcionarios
             }
         } while (verifnomecliente == 1);
 
-    }
+        do {
+            printf("\nEscreva o genero (M/F): ");
+            scanf(" %1s", cliente_achado->genero_cliente);
+            while (getchar() != '\n');
 
-    do {
-        printf("\nEscreva o genero (M/F): ");
-        scanf(" %1s", cliente_achado->genero_cliente);
+            if (cliente_achado->genero_cliente[0] >= 'a' && cliente_achado->genero_cliente[0] <= 'z') {
+                cliente_achado->genero_cliente[0] = cliente_achado->genero_cliente[0] - 32;
+            }
+
+            if (cliente_achado->genero_cliente[0] != 'M' && cliente_achado->genero_cliente[0] != 'F') {
+                printf("\nErro: Opcao invalida. Digite M ou F.\n");
+            }
+        } while (cliente_achado->genero_cliente[0] != 'M' && cliente_achado->genero_cliente[0] != 'F');
+
+        printf("\nEscreva o telefone do cliente (somente numeros): ");
+        scanf("%11lld", &cliente_achado->telefone_cliente);
         while (getchar() != '\n');
-
-        if (cliente_achado->genero_cliente[0] >= 'a' && cliente_achado->genero_cliente[0] <= 'z') {
-            cliente_achado->genero_cliente[0] = cliente_achado->genero_cliente[0] - 32;
-        }
-
-        if (cliente_achado->genero_cliente[0] != 'M' && cliente_achado->genero_cliente[0] != 'F') {
-            printf("\nErro: Opcao invalida. Digite M ou F.\n");
-        }
-    } while (cliente_achado->genero_cliente[0] != 'M' && cliente_achado->genero_cliente[0] != 'F');
-
-    printf("\nEscreva o telefone do cliente (somente numeros): ");
-    scanf("%11lld", &cliente_achado->telefone_cliente);
-    while (getchar() != '\n');
-
-    printf("\n");
+        printf("\n");
+    }
 }
 
 int verificar_nome_cliente(Cliente *cli)
@@ -911,9 +906,8 @@ int verificar_nome_cliente(Cliente *cli)
     }
     return flag;
 }
-//fim clientes===============================================================================================================
 
-//começo vendas==============================================================================================================
+//começo vendas========================================================================================================
 
 int menu_vendas()
 {
@@ -929,20 +923,19 @@ int menu_vendas()
     return opcao;
 }
 
-Venda *busca_venda(Venda *inicio_v, Venda *fim_v, int codigo_alvo, int *Flag){
-    *Flag = 0;
-
-    for (Venda *i = inicio_v; i < fim_v; i++){
-        if (i->codigo_venda == codigo_alvo){
-            return i;
+Venda *busca_venda(Venda *vv, int n, int codigo_alvo, int *Flag){
+    *Flag = 1;
+    for (int i = 0; i < n; i++){
+        if (vv[i].codigo_venda == codigo_alvo){
+            *Flag = 0;
+            return &vv[i];
         }
     }
     printf("\nErro: Venda nao encontrada, tente novamente\n");
-    *Flag = 1;
     return NULL;
 }
 
-int cadastro_venda(Venda *inicio_v, Venda *fim_v, Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *inicio_cli, Cliente *fim_cli){
+int cadastro_venda(Venda *v_venda, int i, Funcionarios *v_funcionario, int total_fun, Cliente *v_cliente, int total_cli){
     if (cancelar_operacao() == 2){
         printf("\nOperacao de cadastro cancelada.\n");
         return 0;
@@ -957,8 +950,8 @@ int cadastro_venda(Venda *inicio_v, Venda *fim_v, Funcionarios *inicio_fun, Func
         while (getchar() != '\n');
 
         int achou = 0;
-        for (Venda *v = inicio_v; v < fim_v; v++){
-            if (v->codigo_venda == codigo){
+        for (int j = 0; j < i; j++){
+            if (v_venda[j].codigo_venda == codigo){
                 achou = 1;
                 break;
             }
@@ -974,47 +967,53 @@ int cadastro_venda(Venda *inicio_v, Venda *fim_v, Funcionarios *inicio_fun, Func
 
     } while (flag == 1);
 
-    fim_v->codigo_venda = codigo;
+    v_venda[i].codigo_venda = codigo;
 
     printf("Digite o valor da venda: ");
-    scanf("%f", &fim_v->valor_venda);
+    scanf("%f", &v_venda[i].valor_venda);
     while (getchar() != '\n');
 
     printf("Digite a data (dd mm aaaa): ");
-    scanf("%d %d %d", fim_v->dia, fim_v->mes, fim_v->ano);
+    scanf("%d %d %d", &v_venda[i].dia, &v_venda[i].mes, &v_venda[i].ano);
     while (getchar() != '\n');
 
     while(1){
-
         printf("Digite o CPF do funcionario responsavel: ");
-        scanf(" %11s", fim_v->cpf_funcionario);
+        scanf(" %11s", v_venda[i].cpf_funcionario);
 
-        int retorno;
-        retorno = busca_cpf_geral(inicio_fun, fim_fun, inicio_cli, fim_cli, fim_v->cpf_funcionario);
-        if(retorno==1) break;
+        int retorno = busca_cpf_geral(v_funcionario, total_fun, v_cliente, total_cli, v_venda[i].cpf_funcionario);
+        if(retorno == 1) break; // Funcionario achado
+        else{
+            int opcao;
+            printf("CPF do Funcionario nao encontrado!\nDeseja cancelar o cadastro? (1-sim/2-nao)");
+            scanf("%d", &opcao);
+            if(opcao == 1) return 0;
+        }
     }
 
     while(1){
-
         printf("Digite o CPF do cliente: ");
-        scanf(" %11s", fim_v->cpf_cliente);
+        scanf(" %11s", v_venda[i].cpf_cliente);
 
-        int retorno;
-        retorno = busca_cpf_geral(inicio_fun, fim_fun, inicio_cli, fim_cli, fim_v->cpf_cliente);
-        if(retorno==2) break;
+        int retorno = busca_cpf_geral(v_funcionario, total_fun, v_cliente, total_cli, v_venda[i].cpf_cliente);
+        if(retorno == 2) break; // Cliente achado
+        else{
+            int opcao;
+            printf("CPF do Cliente nao encontrado!\nDeseja cancelar o cadastro? (1-sim/2-nao)");
+            scanf("%d", &opcao);
+            if(opcao == 1) return 0;
+        }
     }
     
-
     printf("Digite a hora (hh:mm:ss): ");
-    scanf(" %7s", fim_v->hora);
+    scanf(" %8s", v_venda[i].hora);
     while (getchar() != '\n');
 
-    printf("\nSucesso: Venda cadastrada!\n");
     return 1;
 }
 
-void leitura_venda(Venda *inicio_v, Venda *fim_v){
-    if (inicio_v == fim_v){
+void leitura_venda(Venda *v_venda, int t_vendas){
+    if (t_vendas == 0){
         printf("\nNenhuma venda cadastrada para visualizar.\n");
         return;
     }
@@ -1032,8 +1031,9 @@ void leitura_venda(Venda *inicio_v, Venda *fim_v){
         printf("\nDigite o codigo da venda que deseja ler: ");
         scanf("%d", &codigo_alvo);
         while (getchar() != '\n');
-        venda_achada = busca_venda(inicio_v, fim_v, codigo_alvo, Flag);
+        venda_achada = busca_venda(v_venda, t_vendas, codigo_alvo, Flag);
     } while (flag == 1);
+    
     if (flag == 0){
         printf("\nCodigo: %d\n", venda_achada->codigo_venda);
         printf("Valor: %.2f\n", venda_achada->valor_venda);
@@ -1044,9 +1044,9 @@ void leitura_venda(Venda *inicio_v, Venda *fim_v){
     }
 }
 
-void apagar_venda(Venda *inicio_v, Venda **fim_v){
+void apagar_venda(Venda **v_venda, int *t_venda, int *cap_venda){
 
-    if (inicio_v == *fim_v){
+    if (*t_venda == 0){
         printf("\nNenhuma venda cadastrada para apagar.\n");
         return;
     }
@@ -1061,14 +1061,26 @@ void apagar_venda(Venda *inicio_v, Venda **fim_v){
     scanf("%d", &codigo);
     while (getchar() != '\n');
 
-    Venda *alvo = busca_venda(inicio_v, *fim_v, codigo, &flag_busca);
+    Venda *alvo = busca_venda(*v_venda, *t_venda, codigo, &flag_busca);
 
     if (alvo != NULL){
-        for (Venda *v = alvo; v < (*fim_v - 1); v++){
-            *v = *(v + 1);
+        int indice_alvo = alvo - (*v_venda);
+        for (int j = indice_alvo; j < (*t_venda - 1); j++){
+            (*v_venda)[j] = (*v_venda)[j + 1];
         }
 
-        (*fim_v)--;
+        (*t_venda)--;
+
+        if(*t_venda > 0){
+            *cap_venda = *t_venda;
+
+            Venda *temp = (Venda *) realloc(*v_venda, (*cap_venda) * sizeof(Venda));
+            if(temp == NULL){
+                printf("Erro de memoria\n");
+                exit(0);
+            }
+            *v_venda = temp;
+        }
         printf("\nSucesso: Venda removida.\n");
     }
     else{
@@ -1076,9 +1088,9 @@ void apagar_venda(Venda *inicio_v, Venda **fim_v){
     }
 }
 
-void atualizar_infos_venda(Venda *inicio_v, Venda *fim_v, Funcionarios *inicio_fun, Funcionarios *fim_fun, Cliente *inicio_cli, Cliente *fim_cli)
+void atualizar_infos_venda(Venda *v_venda, int t_vendas, Funcionarios *v_funcionario, int t_funcionarios, Cliente *v_cliente, int t_clientes)
 {
-    if (inicio_v == fim_v){
+    if (t_vendas == 0){
         printf("\nNenhuma venda cadastrada para atualizar.\n");
         return;
     }
@@ -1097,11 +1109,7 @@ void atualizar_infos_venda(Venda *inicio_v, Venda *fim_v, Funcionarios *inicio_f
         scanf("%d", &codigo_alvo);
         while (getchar() != '\n');
 
-        venda_achada = busca_venda(inicio_v, fim_v, codigo_alvo, Flag);
-
-        if (venda_achada == NULL){
-            printf("\nErro: Venda nao encontrada. Tente novamente.\n");
-        }
+        venda_achada = busca_venda(v_venda, t_vendas, codigo_alvo, Flag);
 
     } while (flag == 1);
 
@@ -1111,28 +1119,26 @@ void atualizar_infos_venda(Venda *inicio_v, Venda *fim_v, Funcionarios *inicio_f
         while (getchar() != '\n');
 
         printf("Digite a nova data (dd mm aaaa): ");
-        scanf("%d %d %d", venda_achada->dia, venda_achada->mes, venda_achada->ano);
+        scanf("%d %d %d", &venda_achada->dia, &venda_achada->mes, &venda_achada->ano);
         while (getchar() != '\n');
 
         while(1){
+            printf("Digite o novo CPF do funcionario responsavel: ");
+            scanf(" %11s", venda_achada->cpf_funcionario);
 
-        printf("Digite o novo CPF do funcionario responsavel: ");
-        scanf(" %11s", fim_v->cpf_funcionario);
+            int retorno = busca_cpf_geral(v_funcionario, t_funcionarios, v_cliente, t_clientes, venda_achada->cpf_funcionario);
+            if(retorno == 1) break;
+            else printf("CPF nao pertence a um Funcionario. Tente de novo.\n");
+        }
 
-        int retorno;
-        retorno = busca_cpf_geral(inicio_fun, fim_fun, inicio_cli, fim_cli, fim_v->cpf_funcionario);
-        if(retorno==1) break;
-    }
+        while(1){
+            printf("Digite o novo CPF do cliente: ");
+            scanf(" %11s", venda_achada->cpf_cliente);
 
-    while(1){
-
-        printf("Digite o novo CPF do cliente: ");
-        scanf(" %11s", fim_v->cpf_cliente);
-
-        int retorno;
-        retorno = busca_cpf_geral(inicio_fun, fim_fun, inicio_cli, fim_cli, fim_v->cpf_cliente);
-        if(retorno==2) break;
-    }
+            int retorno = busca_cpf_geral(v_funcionario, t_funcionarios, v_cliente, t_clientes, venda_achada->cpf_cliente);
+            if(retorno == 2) break;
+            else printf("CPF nao pertence a um Cliente. Tente de novo.\n");
+        }
 
         printf("Digite a nova hora (hh:mm:ss): ");
         scanf(" %9s", venda_achada->hora);
@@ -1141,5 +1147,3 @@ void atualizar_infos_venda(Venda *inicio_v, Venda *fim_v, Funcionarios *inicio_f
         printf("\nSucesso: Venda atualizada!\n");
     }
 }
-
-// Fim venda======================================================================================================================================
